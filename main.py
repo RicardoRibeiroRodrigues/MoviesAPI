@@ -36,7 +36,7 @@ def get_movie(
     movie_id: Annotated[int, Path(title="The ID of the movie to get", ge=0)]
 ) -> MovieDB:
     """
-    TODO
+    Get a **Movie** object from the database, given its id.
     """
     if movie_id >= len(movies):
         raise HTTPException(
@@ -51,7 +51,7 @@ def get_reviews(
     movie_id: Annotated[int, Path(title="The ID of the movie to get the reviews", ge=0)]
 ) -> list[movieReview]:
     """
-    TODO
+    Get the list of **reviews** for a given movie.
     """
     if movie_id >= len(movies):
         raise HTTPException(
@@ -69,7 +69,7 @@ def add_review(
     review: movieReview,
 ) -> list[movieReview]:
     """
-    TODO
+    Add a **review** to a given movie.
     """
     if movie_id >= len(movies):
         raise HTTPException(
