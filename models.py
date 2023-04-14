@@ -48,7 +48,3 @@ class MovieDB(Movie):
     reviews: dict[int, movieReviewDB] | dict = Field(
         default={}, description="The dict of reviews for the movie."
     )
-
-
-class movieReviewDB(movieReview):
-    review_id: int = Field(description="The ID of the review in the database.")
