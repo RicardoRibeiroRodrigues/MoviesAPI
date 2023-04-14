@@ -44,9 +44,9 @@ class Movie(BaseModel):
 
 
 class MovieDB(Movie):
-    movie_id: int = Field(description="The ID of the movie in the database.")
-    reviews: dict[int, movieReview] | dict = Field(
-        default={}, description="The reviews for the movie."
+    movie_id: int = Field(ge=0, description="The ID of the movie in the database.")
+    reviews: dict[int, movieReviewDB] | dict = Field(
+        default={}, description="The dict of reviews for the movie."
     )
 
 
