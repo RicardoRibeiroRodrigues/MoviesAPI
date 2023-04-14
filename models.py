@@ -42,3 +42,6 @@ class Movie(BaseModel):
 class MovieDB(Movie):
     movie_id: int = Field(description="The ID of the movie in the database.")
     reviews: list[movieReview] | list = []
+
+class movieReviewDB(movieReview):
+    review_id: int = Field(description="The ID of the review in the database.")

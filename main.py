@@ -5,19 +5,32 @@ from fastapi import FastAPI, Path, HTTPException, Response, status, Body
 app = FastAPI()
 
 movies: dict[int, MovieDB] = {}
-last_id = 0
+last_movie_id = 0
+last_review_id = 0
 
 
-def add_movie(movie: MovieDB) -> int:
-    global last_id
-    movie_id = last_id
+def add_movie_db(movie: MovieDB) -> int:
+    global last_movie_id
+    movie_id = last_movie_id
     movies[movie_id] = movie
-    last_id += 1
+    last_movie_id += 1
     return movie_id
 
 
-def remove_movie(movie_id: int) -> MovieDB:
+def remove_movie_db(movie_id: int) -> MovieDB:
     return movies.pop(movie_id)
+
+
+def add_review_db(movie_id: int, review: movieReviewDB) -> int:
+    global last_review_id
+    review_id = last_review_id
+    movies[movie_id].reviews[review_id] = review
+    last_review_id += 1
+    return review_id
+
+
+def remove_review_db(movie_id: int, review_id: int) -> movieReviewDB:
+    return movies[movie_id].reviews.pop(review_id)
 
 
 @app.get("/")
@@ -42,8 +55,8 @@ def create_movie(
     """
     Receive a **Movie** object as json and add it to the database, returns the created movie id on database.
     """
-    movie_to_add = MovieDB(**movie.dict(), movie_id=last_id)
-    movie_id = add_movie(movie_to_add)
+    movie_to_add = MovieDB(**movie.dict(), movie_id=last_movie_id)
+    movie_id = add_movie_db(movie_to_add)
     response.status_code = status.HTTP_201_CREATED
     response.headers["Location"] = f"/movies/{movie_id}"
     return movie_to_add
@@ -51,7 +64,7 @@ def create_movie(
 
 @app.get("/movies/{movie_id}", tags=["movies"])
 def get_movie(
-    movie_id: Annotated[int, Path(title="The ID of the movie to get", ge=0)]
+    movie_id: Annotated[int, Path(description="The ID of the movie to get", ge=0)]
 ) -> MovieDB:
     """
     Get a **Movie** object from the database, given its id.
@@ -64,10 +77,43 @@ def get_movie(
     return movies[movie_id]
 
 
+@app.delete("/movies/{movie_id}", tags=["movies"])
+def delete_movie(
+    movie_id: Annotated[int, Path(description="The ID of the movie to delete", ge=0)]
+) -> MovieDB:
+    """
+    Delete a **Movie** object from the database, given its id.
+    """
+    if movie_id not in movies:
+        raise HTTPException(
+            status_code=404,
+            detail=f"The movie with id {movie_id} doesnt exist in the DataBase.",
+        )
+    return remove_movie_db(movie_id)
+
+
+@app.put("/movies/{movie_id}", tags=["movies"])
+def update_movie(
+    movie_id: Annotated[int, Path(description="The ID of the movie to update", ge=0)],
+    movie: Annotated[Movie, Body(description="Movie JSON to update the database")],
+) -> MovieDB:
+    """
+    Update a **Movie** object from the database, given its id.
+    """
+    if movie_id not in movies:
+        raise HTTPException(
+            status_code=404,
+            detail=f"The movie with id {movie_id} doesnt exist in the DataBase.",
+        )
+    movies[movie_id] = MovieDB(**movie.dict(), movie_id=movie_id)
+    return movies[movie_id]
+
+
+# TODO: Rever a nomeação das rotas dos reviews.
 @app.get("/reviews/{movie_id}", tags=["reviews"])
 def get_reviews(
     movie_id: Annotated[
-        int, Path(title="The ID of the movie to get the all the reviews", ge=0)
+        int, Path(description="The ID of the movie to get the all the reviews", ge=0)
     ]
 ) -> list[movieReview]:
     """
@@ -78,13 +124,13 @@ def get_reviews(
             status_code=404,
             detail=f"The movie with id {movie_id} doesnt exist in the DataBase.",
         )
-    return movies[movie_id].reviews
+    return list(movies[movie_id].reviews.values())
 
 
 @app.post("/reviews/{movie_id}", tags=["reviews"])
-def add_review(
+def create_review(
     movie_id: Annotated[
-        int, Path(title="The ID of the movie to post the review.", ge=0)
+        int, Path(description="The ID of the movie to post the review.", ge=0)
     ],
     review: movieReview,
     response: Response,
@@ -92,12 +138,68 @@ def add_review(
     """
     Add a **review** to a given movie.
     """
-    if movie_id >= len(movies):
+    if movie_id not in movies:
         raise HTTPException(
             status_code=404,
             detail=f"The movie with id {movie_id} doesnt exist in the DataBase.",
         )
-    movies[movie_id].reviews.append(review)
+    movie_id = add_review_db(
+        movie_id, movieReviewDB(**review.dict(), review_id=last_review_id)
+    )
     response.status_code = status.HTTP_201_CREATED
     response.headers["Location"] = f"/reviews/{movie_id}"
     return review
+
+
+@app.put("/reviews/{movie_id}/{review_id}", tags=["reviews"])
+def update_review(
+    movie_id: Annotated[
+        int, Path(description="The id of the movie to update the review.", ge=0)
+    ],
+    review_id: Annotated[
+        int, Path(description="The id of the review to update.", ge=0)
+    ],
+    review: movieReview,
+) -> movieReview:
+    """
+    Update a **review** from its id and the **movie id**.
+    """
+    if movie_id not in movies:
+        raise HTTPException(
+            status_code=404,
+            detail=f"The movie with id {movie_id} doesnt exist in the DataBase.",
+        )
+    if review_id not in movies[movie_id].reviews:
+        raise HTTPException(
+            status_code=404,
+            detail=f"The review with id {review_id} doesnt exist in the DataBase.",
+        )
+    movies[movie_id].reviews[review_id] = movieReviewDB(
+        **review.dict(), review_id=review_id
+    )
+    return review
+
+
+@app.delete("/reviews/{movie_id}/{review_id}", tags=["reviews"])
+def delete_review(
+    movie_id: Annotated[
+        int, Path(description="The ID of the movie to delete the review.", ge=0)
+    ],
+    review_id: Annotated[
+        int, Path(description="The ID of the review to delete.", ge=0)
+    ],
+) -> movieReview:
+    """
+    Delete a **review** from a given movie.
+    """
+    if movie_id not in movies:
+        raise HTTPException(
+            status_code=404,
+            detail=f"The movie with id {movie_id} doesnt exist in the DataBase.",
+        )
+    if review_id not in movies[movie_id].reviews:
+        raise HTTPException(
+            status_code=404,
+            detail=f"The review with id {review_id} doesnt exist in the DataBase.",
+        )
+    return remove_review_db(movie_id, review_id)
