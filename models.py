@@ -26,6 +26,10 @@ class movieReview(BaseModel):
     )
 
 
+class movieReviewDB(movieReview):
+    review_id: int = Field(ge=0, description="The ID of the review in the database.")
+
+
 class Movie(BaseModel):
     title: str = Field(description="The title of the movie.", example="The Matrix")
     studio: str = Field(
@@ -41,7 +45,10 @@ class Movie(BaseModel):
 
 class MovieDB(Movie):
     movie_id: int = Field(description="The ID of the movie in the database.")
-    reviews: list[movieReview] | list = []
+    reviews: dict[int, movieReview] | dict = Field(
+        default={}, description="The reviews for the movie."
+    )
+
 
 class movieReviewDB(movieReview):
     review_id: int = Field(description="The ID of the review in the database.")
