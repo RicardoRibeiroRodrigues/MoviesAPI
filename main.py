@@ -33,6 +33,14 @@ def remove_review_db(movie_id: int, review_id: int) -> movieReviewDB:
     return movies[movie_id].reviews.pop(review_id)
 
 
+# This is used to document the 404 response for all endpoints that can raise it.
+RESPONSES_NOT_FOUND = {
+    404: {
+        "description": "Item not found in the database",
+    }
+}
+
+
 @app.get("/")
 async def root():
     return "Hello World, please check the /docs for info on using this API."
@@ -41,13 +49,12 @@ async def root():
 @app.get("/movies/", tags=["movies"])
 def get_movies():
     """
-    Get the list of the **movies** in the database.
+    Get the list of the all **movies** in the database.
     """
     return list(movies.values())
 
 
-# TODO: Descricao dos argumentos usando Body ou Field, colocar summary e description no .post()
-@app.post("/movies/", tags=["movies"])
+@app.post("/movies/", tags=["movies"], status_code=201)
 def create_movie(
     movie: Annotated[Movie, Body(description="Movie JSON to add to the database")],
     response: Response,
@@ -62,9 +69,11 @@ def create_movie(
     return movie_to_add
 
 
-@app.get("/movies/{movie_id}", tags=["movies"])
+@app.get("/movies/{movie_id}", tags=["movies"], responses=RESPONSES_NOT_FOUND)
 def get_movie(
-    movie_id: Annotated[int, Path(description="The ID of the movie to get", ge=0)]
+    movie_id: Annotated[
+        int, Path(description="The ID of the movie to get", ge=0, example=0)
+    ]
 ) -> MovieDB:
     """
     Get a **Movie** object from the database, given its id.
@@ -77,9 +86,11 @@ def get_movie(
     return movies[movie_id]
 
 
-@app.delete("/movies/{movie_id}", tags=["movies"])
+@app.delete("/movies/{movie_id}", tags=["movies"], responses=RESPONSES_NOT_FOUND)
 def delete_movie(
-    movie_id: Annotated[int, Path(description="The ID of the movie to delete", ge=0)]
+    movie_id: Annotated[
+        int, Path(description="The ID of the movie to delete", ge=0, example=0)
+    ]
 ) -> MovieDB:
     """
     Delete a **Movie** object from the database, given its id.
@@ -92,9 +103,11 @@ def delete_movie(
     return remove_movie_db(movie_id)
 
 
-@app.put("/movies/{movie_id}", tags=["movies"])
+@app.put("/movies/{movie_id}", tags=["movies"], responses=RESPONSES_NOT_FOUND)
 def update_movie(
-    movie_id: Annotated[int, Path(description="The ID of the movie to update", ge=0)],
+    movie_id: Annotated[
+        int, Path(description="The ID of the movie to update", ge=0, example=0)
+    ],
     movie: Annotated[Movie, Body(description="Movie JSON to update the database")],
 ) -> MovieDB:
     """
@@ -109,11 +122,15 @@ def update_movie(
     return movies[movie_id]
 
 
-# TODO: Rever a nomeação das rotas dos reviews.
-@app.get("/reviews/{movie_id}", tags=["reviews"])
-def get_reviews(
+@app.get("/movies/{movie_id}/reviews", tags=["reviews"], responses=RESPONSES_NOT_FOUND)
+def get_movie_reviews(
     movie_id: Annotated[
-        int, Path(description="The ID of the movie to get the all the reviews", ge=0)
+        int,
+        Path(
+            description="The ID of the movie to get the all the reviews",
+            ge=0,
+            example=0,
+        ),
     ]
 ) -> list[movieReview]:
     """
@@ -127,10 +144,16 @@ def get_reviews(
     return list(movies[movie_id].reviews.values())
 
 
-@app.post("/reviews/{movie_id}", tags=["reviews"])
+@app.post(
+    "/movies/{movie_id}/reviews",
+    tags=["reviews"],
+    status_code=201,
+    responses=RESPONSES_NOT_FOUND,
+)
 def create_review(
     movie_id: Annotated[
-        int, Path(description="The ID of the movie to post the review.", ge=0)
+        int,
+        Path(description="The ID of the movie to post the review.", ge=0, example=0),
     ],
     review: movieReview,
     response: Response,
@@ -151,13 +174,18 @@ def create_review(
     return review
 
 
-@app.put("/reviews/{movie_id}/{review_id}", tags=["reviews"])
+@app.put(
+    "/movies/{movie_id}/reviews/{review_id}",
+    tags=["reviews"],
+    responses=RESPONSES_NOT_FOUND,
+)
 def update_review(
     movie_id: Annotated[
-        int, Path(description="The id of the movie to update the review.", ge=0)
+        int,
+        Path(description="The id of the movie to update the review.", ge=0, example=0),
     ],
     review_id: Annotated[
-        int, Path(description="The id of the review to update.", ge=0)
+        int, Path(description="The id of the review to update.", ge=0, example=0)
     ],
     review: movieReview,
 ) -> movieReview:
@@ -180,13 +208,18 @@ def update_review(
     return review
 
 
-@app.delete("/reviews/{movie_id}/{review_id}", tags=["reviews"])
+@app.delete(
+    "/movies/{movie_id}/reviews/{review_id}",
+    tags=["reviews"],
+    responses=RESPONSES_NOT_FOUND,
+)
 def delete_review(
     movie_id: Annotated[
-        int, Path(description="The ID of the movie to delete the review.", ge=0)
+        int,
+        Path(description="The ID of the movie to delete the review.", ge=0, example=0),
     ],
     review_id: Annotated[
-        int, Path(description="The ID of the review to delete.", ge=0)
+        int, Path(description="The ID of the review to delete.", ge=0, example=0)
     ],
 ) -> movieReview:
     """
