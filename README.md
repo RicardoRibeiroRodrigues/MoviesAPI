@@ -19,3 +19,5 @@ uvicorn main:app --reload
 - [Ricardo Ribeiro Rodrigues](https://github.com/RicardoRibeiroRodrigues)
 
 # Vídeo do projeto:
+
+[![Thumbnail do video](http://img.youtube.com/vi/_TvoIRiWiOU/0.jpg)](https://youtu.be/_TvoIRiWiOU "Demonstração da API")
