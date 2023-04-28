@@ -20,7 +20,7 @@ class User(Base):
     fullname: Mapped[Optional[str]] = mapped_column(String(100))
     password: Mapped[str] = mapped_column(String(80))
     user_reviews: Mapped[List["MovieReview"]] = relationship(
-        "MovieReview", back_populates="user"
+        "MovieReview", back_populates="user", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
@@ -37,7 +37,7 @@ class Movie(Base):
     year: Mapped[int] = mapped_column(Integer)
 
     reviews: Mapped[List["MovieReview"]] = relationship(
-        "MovieReview", back_populates="movie"
+        "MovieReview", back_populates="movie", cascade="all, delete-orphan"
     )
 
 
