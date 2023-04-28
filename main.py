@@ -147,12 +147,12 @@ def get_movie_reviews(
     """
     Get the list of **reviews** for a given movie.
     """
-    movie_reviews = crud.get_movie_reviews(db, movie_id)
-    if not movie_reviews:
+    if not crud.get_movie(db, movie_id):
         raise HTTPException(
             status_code=404,
             detail=f"The movie with id {movie_id} doesnt exist in the DataBase.",
         )
+    movie_reviews = crud.get_movie_reviews(db, movie_id)
     return movie_reviews
 
 
@@ -203,17 +203,12 @@ def update_review(
     review_id: Annotated[
         int, Path(description="The id of the review to update.", ge=0, example=1)
     ],
-    review: schemas.MovieReviewCreate,
+    review: schemas.MovieReviewUpdate,
     db: Session = Depends(get_db),
 ) -> schemas.MovieReview:
     """
     Update a **review** from its id and the **movie id**.
     """
-    if not crud.get_movie(db, review.movie_id):
-        raise HTTPException(
-            status_code=404,
-            detail=f"The movie with id {review.movie_id} doesnt exist in the DataBase.",
-        )
     review_updated = crud.update_movie_review(db, review_id, review)
     if not review_updated:
         raise HTTPException(

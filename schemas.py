@@ -11,6 +11,9 @@ class MovieReviewBase(BaseModel):
     review: str = Field(
         description="The texto of the review of the movie.", example="Great movie!"
     )
+
+
+class MovieReviewCreate(MovieReviewBase):
     movie_id: int = Field(
         ge=0, description="The id of the movie that the review is for.", example=1
     )
@@ -21,11 +24,11 @@ class MovieReviewBase(BaseModel):
     )
 
 
-class MovieReviewCreate(MovieReviewBase):
+class MovieReviewUpdate(MovieReviewBase):
     pass
 
 
-class MovieReview(MovieReviewBase):
+class MovieReview(MovieReviewCreate):
     review_id: int = Field(
         ge=0, description="The ID of the review in the database.", example=1
     )
