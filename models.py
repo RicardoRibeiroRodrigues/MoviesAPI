@@ -31,7 +31,7 @@ class Movie(Base):
     __tablename__ = "movie"
 
     movie_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    title = mapped_column(String(80))
+    title: Mapped[str] = mapped_column(String(80))
     studio: Mapped[str] = mapped_column(String(80))
     description: Mapped[Optional[str]] = mapped_column(String(400))
     year: Mapped[int] = mapped_column(Integer)
