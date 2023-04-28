@@ -4,7 +4,7 @@ import models, schemas
 
 
 def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+    return db.query(models.User).filter(models.User.user_id == user_id).first()
 
 
 def create_user(db: Session, user: schemas.UserCreate):
