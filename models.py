@@ -1,54 +1,55 @@
-from pydantic import BaseModel, Field
+from typing import List
+from typing import Optional
+from sqlalchemy import ForeignKey
+from sqlalchemy import String, Integer, DECIMAL
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 
-class User(BaseModel):
-    user_id: int = Field(description="The ID of the user in the database.", example=1)
-    username: str = Field(description="The username of the user.", example="user123")
-    full_name: str | None = Field(
-        default=None,
-        description="The full name of the user.",
-        example="User 123 da Silva",
+class Base(DeclarativeBase):
+    pass
+
+
+class User(Base):
+    __tablename__ = "user"
+
+    user_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String(30))
+    fullname: Mapped[Optional[str]] = mapped_column(String(100))
+    password: Mapped[str] = mapped_column(String(80))
+    user_reviews: Mapped[List["MovieReview"]] = relationship(
+        "MovieReview", back_populates="user"
+    )
+
+    def __repr__(self) -> str:
+        return f"User(id={self.id!r}, name={self.name!r}, fullname={self.fullname!r})"
+
+
+class Movie(Base):
+    __tablename__ = "movie"
+
+    movie_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    title = mapped_column(String(80))
+    studio: Mapped[str] = mapped_column(String(80))
+    description: Mapped[Optional[str]] = mapped_column(String(400))
+    year: Mapped[int] = mapped_column(Integer)
+
+    reviews: Mapped[List["MovieReview"]] = relationship(
+        "MovieReview", back_populates="movie"
     )
 
 
-class movieReview(BaseModel):
-    n_stars: float = Field(
-        gte=0.0,
-        le=5.0,
-        description="The number of stars from 0.0 to 5.0 the user has given to the movie.",
-        example=4.6,
-    )
-    review: str = Field(
-        description="The texto of the review of the movie.", example="Great movie!"
-    )
-    user: User = Field(
-        description="The user that has made the review.",
-    )
+class MovieReview(Base):
+    __tablename__ = "MovieReview"
 
+    review_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    n_stars: Mapped[float] = mapped_column(DECIMAL(2, 1))
+    review: Mapped[str] = mapped_column(String(500))
 
-class movieReviewDB(movieReview):
-    review_id: int = Field(
-        ge=0, description="The ID of the review in the database.", example=0
-    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
+    user: Mapped["User"] = relationship(back_populates="user_reviews")
 
-
-class Movie(BaseModel):
-    title: str = Field(description="The title of the movie.", example="The Matrix")
-    studio: str = Field(
-        description="The studio that produced the movie.", example="Warner Bros."
-    )
-    description: str | None = Field(
-        default=None,
-        description="The description of the movie.",
-        example="A movie about a hacker.",
-    )
-    year: int = Field(description="The year the movie was released.", example=1999)
-
-
-class MovieDB(Movie):
-    movie_id: int = Field(
-        ge=0, description="The ID of the movie in the database.", example=0
-    )
-    reviews: dict[int, movieReviewDB] | dict = Field(
-        default={}, description="The dict of reviews for the movie."
-    )
+    movie_id: Mapped[int] = mapped_column(ForeignKey("movie.movie_id"))
+    movie: Mapped["Movie"] = relationship(back_populates="reviews")
