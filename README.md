@@ -24,6 +24,10 @@ python create_or_reset_db.py
 uvicorn main:app --reload
 ```
 
+# Diagrama ER:
+
+![Diagrama ER](diagrama_er.png "Diagrama ER")
+
 # Diagrama do banco de dados:
 
 ![Diagrama do banco de dados](diagrama.png "Diagrama")
