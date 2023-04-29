@@ -35,7 +35,7 @@ uvicorn main:app --reload
 
 # Vídeo do projeto parte 2:
 
-[![Thumbnail do video](http://img.youtube.com/vi/onqEbWrGYto/0.jpg)](https://youtu.be/onqEbWrGYto "Demonstração da API com ORM")
+[![Thumbnail do video](http://img.youtube.com/vi/y4ZxlYrwkDI/0.jpg)](https://www.youtube.com/watch?v=y4ZxlYrwkDI "Demonstração da API com ORM")
 
 # Alunos:
 - [Guilherme Fontana Louro](https://github.com/guifl2001)
