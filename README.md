@@ -1,46 +1,45 @@
-# Projeto 1 Megadados - API REST de filmes com SQL
+# MySQL Movie REST API
 
-# Para rodar o servidor local:
-1. Clone o repositório: 
-```sh 
-git clone https://github.com/insper-classroom/23-1-projeto-sql-registrogeral
+# To run the server localy:
+1. Clone the repository:
+```sh
+git clone https://github.com/RicardoRibeiroRodrigues/MoviesAPI/
 ```
-2. Baixe as dependências: 
-```sh 
+2. Install dependencies:
+```sh
 pip install -r requirements.txt
 ```
-3. Coloque as credenciais necessarias em um arquivo .env
+3. Place the necessary credentials in a .env file:
 ```sh
-export MD_DB_SERVER="{SEU_SERVIDOR_MYSQL}"
-export MD_DB_USERNAME="{SEU_USUARIO}"
-export MD_DB_PASSWORD="{SUA_SENHA}" 
+export MD_DB_SERVER="{YOUR_MYSQL_SERVER}"
+export MD_DB_USERNAME="{YOUR_USERNAME}"
+export MD_DB_PASSWORD="{YOUR_PASSWORD}"
 ```
-4. Crie o banco de dados no MYSQL WORKBENCH ou utilizando o script que fizemos.
+4. Create the database in MYSQL WORKBENCH or using the script we provided.
 ```sh
 python create_or_reset_db.py
 ```
-5. Rode o servidor com: 
+5. Run the server with:
 ```sh
 uvicorn main:app --reload
 ```
 
-# Diagrama ER:
+# ER Diagram:
 
-![Diagrama ER](diagrama_er.png "Diagrama ER")
+![ER Diagram](diagrama_er.png "ER Diagram")
 
-# Diagrama do banco de dados:
+# Database Diagram:
 
-![Diagrama do banco de dados](diagrama.png "Diagrama")
+![Database Diagram](diagrama.png "Database Diagram")
 
+# Project Video:
 
-# Vídeo do projeto:
+[![Video Thumbnail](http://img.youtube.com/vi/_TvoIRiWiOU/0.jpg)](https://youtu.be/_TvoIRiWiOU "API Demonstration")
 
-[![Thumbnail do video](http://img.youtube.com/vi/_TvoIRiWiOU/0.jpg)](https://youtu.be/_TvoIRiWiOU "Demonstração da API")
+# Project Video Part 2:
 
-# Vídeo do projeto parte 2:
+[![Video Thumbnail](http://img.youtube.com/vi/y4ZxlYrwkDI/0.jpg)](https://www.youtube.com/watch?v=y4ZxlYrwkDI "API Demonstration with ORM")
 
-[![Thumbnail do video](http://img.youtube.com/vi/y4ZxlYrwkDI/0.jpg)](https://www.youtube.com/watch?v=y4ZxlYrwkDI "Demonstração da API com ORM")
-
-# Alunos:
+# Students:
 - [Guilherme Fontana Louro](https://github.com/guifl2001)
 - [Ricardo Ribeiro Rodrigues](https://github.com/RicardoRibeiroRodrigues)
